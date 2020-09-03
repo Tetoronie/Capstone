@@ -1,2 +1,3 @@
 # Capstone
-Senior Capstone Projects
+Christopher Mathieson
+Senior Capstone Project
