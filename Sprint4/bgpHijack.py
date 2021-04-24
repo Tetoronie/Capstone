@@ -74,8 +74,7 @@ def bgp_edit(pkt):
     #get all the bgp messages in temp
     temp = temp_pkt[TCP].payload
     #Find how many BGPHeaders are in there using the marker to identify them
-    rg = range(str(temp).count('\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff
-    \xff\xff'))
+    rg = range(str(temp).count('\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff'))
     #for all the bgpheaders in the message
     for j in rg:
         temp2=temp.copy() #copy next header in temp2
