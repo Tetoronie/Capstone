@@ -168,17 +168,17 @@ def main():
     plist = sys.argv[2].split('/',2)
     frg_prefix = (int(plist[1]),plist[0])
     
-    load contrib("bgp") #load bgp protocol in scapy
+    load_contrib("bgp") #load bgp protocol in scapy
     q = nfqueue.queue() #create an nfqueue object where the iptables store the packets
     q.open() #open the queue
-    q.bind(socket.AF INET) #bind queue to socket (why ?)
+    q.bind(socket.AF_INET) #bind queue to socket (why ?)
     q.set_callback(process) #call function (for very message)
-    q.create queue(0) #create queue (initialize)
+    q.create_queue(0) #create queue (initialize)
     try:
-        q.try run() #try running the queue object
+        q.try_run() #try running the queue object
     except KeyboardInterrupt: #if ctrl ˆc interruption is used
         print("Exiting...") #print message
-        q.unbind(socket.AF INET) #unbind socket
+        q.unbind(socket.AF_INET) #unbind socket
         q.close() #close object
         sys.exit(1) #close program
         
