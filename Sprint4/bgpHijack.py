@@ -15,7 +15,7 @@ def seq_mangle(seq, ack, sender, recer, message, or_message, forged, firstforged
                 seq = message[TCP].seq + len(str(or_message[TCP].payload)) #next sequence number to be acked is the seqnum of the message plus message length
             print("SEQ ADJUSTED ")
             if seq > 4294967295: #if sequence number has maxed out wrap around
-                seq = seq−4294967295
+                seq = seq-4294967295
             prev_type = 'send' #set previous type to send
         elif message[IP].dst == sender:#if source addr is receiver store next seq and change ack to an accepted one
             ack = message[TCP].ack #store in ack the next number to be used as a sequence number
@@ -27,7 +27,7 @@ def seq_mangle(seq, ack, sender, recer, message, or_message, forged, firstforged
         del message[TCP].chksum
     else: #if a packet is not forged yet just keep track of the sequence and acknowledgement numbers and previous message type
         if message[IP].dst == recer:
-            seq = message[TCP].seq + len(str(or message[TCP].payload))
+            seq = message[TCP].seq + len(str(or_message[TCP].payload))
             newseq = seq
             prev_type = 'send'
         elif message[IP].dst == sender:
