@@ -91,7 +91,7 @@ def bgp_edit(pkt):
             if temp2[BGPUpdate].nlri.count(or_prefix) is not 0:
                 i = temp2[BGPUpdate].nlri.index(or_prefix) #find the index of the prefix in the nlri list
                 temp2[BGPUpdate].nlri.pop(i) #pop(delete) the original nlri from the list
-                temp2[BGPUpdate].nlri.insert(i,frg prefix) #insert the forged prefix in the same index
+                temp2[BGPUpdate].nlri.insert(i,frg_prefix) #insert the forged prefix in the same index
                 print "Message Forged..."
                 del temp2[BGPHeader].len #del the bgpheader len to allow scapy to recalculate it
                 forged = True #set the message was forged flag
