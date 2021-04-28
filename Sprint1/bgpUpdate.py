@@ -18,7 +18,7 @@ BGPHeader = BGPHeader(type=2, marker=0xffffffffffffffffffffffffffffffff)
 
 BGPUp = BGPUpdate(path_attr=[BGPPathAttr(type_flags=64, type_code=5, attribute=[BGPPAOrigin=0, BGPPAASPath=['1000','1050'], BGPPANextHop('192.168.4.2')])], nlri=BGPNLRI_IPv4(prefix='172.16.0.0/16'))
 
-BGPUpB = BGPUpdate(path_attr=[BGPPathAttr(type_flags=64, type_code=5, attribute=BGPPALocalPref(local_pref=100), nlri=BGPNLRI_IPv4(prefix='172.16.0.0/16'))
+BGPUpB = BGPUpdate(path_attr=[BGPPathAttr(type_flags=64, type_code=5, attribute=BGPPALocalPref(local_pref=100), nlri=BGPNLRI_IPv4[(16, '172.16.0.0')])
 
 nextHop = BGPPANextHop('192.168.1.1')
 
