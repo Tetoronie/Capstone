@@ -17,7 +17,7 @@ tcp = TCP(dport=179, sport=int(sys.argv[3]), seq=int(sys.argv[1]), ack=int(sys.a
 BGPHeader = BGPHeader(type=2, marker=0xffffffffffffffffffffffffffffffff)
 
 Origin = BGPPathAttr(type_flags=64, type_code=1, attribute=BGPPAOrigin(0))
-Path = BGPPathAttr(type_flags=64, type_code=2, attribute=BGPPAASPath['1000', '1050'])
+Path = BGPPathAttr(type_flags=64, type_code=2, attribute=BGPPAASPath([1000, 1050]))
 nextHop = BGPPathAttr(type_flags=64, type_code=4, attribute=BGPPANextHop('192.168.4.2'))
 nlriV = BGPNLRI_IPv4(prefix='172.16.0.0')
 localPref = BGPPathAttr(type_flags=64, type_code=5, attribute=BGPPALocalPref(local_pref=100))
