@@ -19,9 +19,9 @@ BGPHeader = BGPHeader(type=2, marker=0xffffffffffffffffffffffffffffffff)
 Origin = 0
 Path = ['1000', '1050']
 nextHop = '192.168.4.2'
-#nlriV = BGPNLRI_IPv4[(16, '172.16.0.0')]
+nlriV = BGPNLRI_IPv4(prefix='172.16.0.0')
 
-#BGPUp = BGPUpdate(path_attr=[BGPPathAttr(type_flags=64, type_code=5, attribute=[BGPPAOrigin=0, BGPPAASPath=['1000','1050'], BGPPANextHop='192.168.4.2')], nlri=BGPNLRI_IPv4(prefix='172.16.0.0/16'))
+BGPUp = BGPUpdate(path_attr=[BGPPathAttr(type_flags=64, type_code=5, attribute=[BGPPAOrigin=0, BGPPAASPath=['1000','1050'], BGPPANextHop='192.168.4.2'], nlri=BGPNLRI_IPv4(prefix='172.16.0.0/16'))
 
 BGPUpB = BGPUpdate(path_attr=[BGPPathAttr(type_flags=64, type_code=5, attribute=BGPPALocalPref(local_pref=100))], nlri=BGPNLRI_IPv4(prefix='172.16.0.0/16'))
 
@@ -29,7 +29,7 @@ BGPUpB = BGPUpdate(path_attr=[BGPPathAttr(type_flags=64, type_code=5, attribute=
 #pkt=IP(dst=dIP,src=sIP,ttl=1) / TCP(dport=dstPort,sport=srcPort) / BGPHeader / BGPNotif
 #pkt.show2()
 
-packet = base / tcp / BGPHeader / BGPUpB
+packet = base / tcp / BGPHeader / BGPUp
 packet.show()
 
 #BGPPALocalPref(local_pref=100), 
